@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ap.spring.model.InhaalExamen;
+import edu.ap.spring.model.InhaalExamenRepository;
 import edu.ap.spring.redis.RedisService;
 
 @RestController
 public class ExamController {
 
 	private RedisService service;
+	private InhaalExamenRepository repos;
 	
 	@Autowired
 	public void setService(RedisService service) {
@@ -30,7 +32,9 @@ public class ExamController {
 		InhaalExamen newExam = new InhaalExamen(student,exam,reason);
 		String key=student+":"+exam+":"+reason;
 		if(service.getKey(key)==null) {
+			
 			service.setKey(key, newExam.getDate());
+			repos.save(newExam);
 			
 		}
 		return "added";
@@ -40,6 +44,7 @@ public class ExamController {
 		Set<String> keys = service.keys(student+"*");
 		String tekst = "<html><body><h1>"+student+"</h1></body></html>";
 		for(String item:keys) {
+			
 			System.out.println(item);
 			String[]info = item.split(":");
 			tekst+="<p>"+info[1]+" "+info[2]+" "+service.getKey(item)+"</p>";
