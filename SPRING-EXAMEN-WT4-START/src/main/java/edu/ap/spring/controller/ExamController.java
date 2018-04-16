@@ -1,5 +1,7 @@
 package edu.ap.spring.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.websocket.server.PathParam;
@@ -34,7 +36,7 @@ public class ExamController {
 		if(service.getKey(key)==null) {
 			
 			service.setKey(key, newExam.getDate());
-			repos.save(newExam);
+			
 			
 		}
 		return "added";
@@ -43,13 +45,18 @@ public class ExamController {
 	public String getInfoStudent(@PathVariable("student")String student){
 		Set<String> keys = service.keys(student+"*");
 		String tekst = "<html><body><h1>"+student+"</h1></body></html>";
+		List<String>sort  =new ArrayList<>();
 		for(String item:keys) {
-			
-			System.out.println(item);
 			String[]info = item.split(":");
-			tekst+="<p>"+info[1]+" "+info[2]+" "+service.getKey(item)+"</p>";
+			sort.add(info[2]+"  "+info[1]+ "  "+service.getKey(item));
+		}
+		java.util.Collections.sort(sort);
+		
+		for(String item: sort) {
+			tekst+="<p>"+item+"</p>";
 		}
 		tekst +="</html></body>";
+		
 		return tekst;
 		
 		
